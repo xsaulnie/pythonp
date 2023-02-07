@@ -11,8 +11,6 @@ number = sys.argv[1]
 
 assert number.isdigit(), "argument is not an integer"
 
-if (number.isdigit() == False):
-    sys.exit()
 
 true_number = int(sys.argv[1])
 
