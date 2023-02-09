@@ -1,0 +1,4 @@
+conda list
+pip show numpy --verbose
+conda remove numpy
+conda install numpy
