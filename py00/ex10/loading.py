@@ -8,18 +8,20 @@ def ft_progress(list):
     arrow = 0
     sec = time.time()
     eta = 0
+    cmpt = 0
 
     for i in list:
 
         arrow = ""
-        percent = round(i / lenp * 100)
-        arrown = round(i / lenp * 20)
+        percent = round((cmpt + 1 )/ lenp * 100)
+        arrown = round((cmpt + 1 )/ lenp * 20)
         now = time.time() - sec
-        eta = (now / (i + 1)) * lenp
+        eta = (now / (cmpt + 1)) * lenp
         for j in range(arrown - 1):
             arrow += "="
         arrow += ">"
-        print("ETA: %.2fs [%3d%%] [%-20s] %d/%d | elapsed time %.2f" % (eta, percent, arrow, i + 1, lenp, now))
+        print("ETA: %.2fs [%3d%%] [%-20s] %d/%d | elapsed time %.2f" % (eta, percent, arrow, cmpt + 1, lenp, now))
+        cmpt += 1
         yield i
 
 
@@ -31,7 +33,7 @@ def ft_progress(list):
 #    print()
 #    print(ret)
 
-listy = range(3333)
+listy = range(100)
 ret = 0
 for elem in ft_progress(listy):
     ret += elem

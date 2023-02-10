@@ -40,8 +40,10 @@ morse_table = {
   " ": "/"
 }
 
-
 carac="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 "
+
+if (len(sys.argv) == 1):
+    sys.exit()
 
 word=""
 for argu in sys.argv[1:]:

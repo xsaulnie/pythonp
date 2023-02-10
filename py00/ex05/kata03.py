@@ -1,4 +1,4 @@
-kata = "The right format"
+kata = "the right format"
 
 print(f"{kata.rjust(42, '-')}", end="")
 

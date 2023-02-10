@@ -22,6 +22,9 @@ cookbook={
 }
 
 def print_recipe_names():
+    if (len(cookbook) == 0):
+        print("No recipe on the cookbook")
+        return 
     print("Recipes in the cookbook : ")
     for key, value in cookbook.items():
             print(key, end=" ")
@@ -45,6 +48,7 @@ def delete_recipe(name):
     for key, value in cookbook.items():
         if (key == name):
             del cookbook[key]
+            print(f"{name} deleted")
             return
     print(f"No recipe {name} was found")
 def add_recipe():
@@ -59,7 +63,6 @@ def add_recipe():
 
     typem = input(">>> Enter a meal type:\n")
 
-
     prept = "36a"
 
     while True:
@@ -73,6 +76,7 @@ def add_recipe():
     cookbook[name]["ingredients"] = cur_lst
     cookbook[name]["meal"] = typem
     cookbook[name]["prep_time"] = int(prept)
+    print(f"{name} added")
     return
 
 def print_menu():

@@ -13,17 +13,24 @@ print("This is an interactive guessing game!\nYou have to enter a number between
 while True:
     cmpt = cmpt + 1
     number = input("What's your guess between 1 and 99?\n")
-    if (number == "exit"):
-        print("Goodbye!")
-        sys.exit()
-    elif (number.isdigit() == False):
-        print("That's not a number.")
-    elif (int(number) > secret):
+ 
+    try:
+        n = int(number)
+    except:
+        print("That's not a number")
+        continue
+
+    if (n >= 100):
+        print("Way too high, your guess must be between 1 and 99")
+    elif (n <= 0):
+        print("Way too low, your guess must be between 1 and 99")
+    elif (n > secret):
         print("Too high!")
-    elif (int(number) < secret):
+    elif (n < secret):
         print("Too low!")
     else:
-        print("Congratulations, you've got it!")
+        if (cmpt != 1):
+            print("Congratulations, you've got it!")
         break
 if (secret == 42):
     print("The answer to the ultimate question of life, the universe and everything is 42.")
