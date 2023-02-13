@@ -44,6 +44,9 @@ print(Vector((10, 16)).shape, Vector((10, 16)))
 print(Vector(3).shape, Vector(3))
 print(Vector(0).shape, Vector(0))
 print(Vector((10, 10)).shape, Vector((10, 10)))
-print(Vector((10, 3)))
+try:
+    print(Vector((10, 3)))
+except :
+    print("range error")
 
 
