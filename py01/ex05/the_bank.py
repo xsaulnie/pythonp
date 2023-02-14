@@ -122,7 +122,6 @@ class Bank(object):
             acc.__dict__[id] = -1
         if (not type(acc.value) is float and not type(acc.value) is int):
             acc.__dict__[value] = 0.0
-        
 
         addrstart = False
         zipstart = False

@@ -42,9 +42,26 @@ class Recipe:
             ing = ing + x + ", "
 
         return f"Recipe description of {self.name} :\n\tDifficulty (from 1 to 5) : {self.cooking_lvl}\n\tCooking time {self.cooking_time} minutes\n\tIngredients : {ing[:-2]}\n\tType of recipe : {self.recipe_type}\n\tOther informations : {self.description}"
-
-    def list_of_str(self, lst):
+    @staticmethod
+    def list_of_str(lst):
         for x in lst:
             if (type(x) is not str):
                 return False
         return True
+
+if __name__ == "__main__":
+    arya=Stark("Arya")
+    print(arya.__dict__)
+    arya.print_house_words()
+    print(arya.is_alive)
+    arya.die()
+    print(arya.is_alive)
+    print(arya.__doc__)
+
+    tywin=Lannister("Tywin")
+    print(tywin.__dict__)
+    tywin.print_house_words()
+    print(tywin.is_alive)
+    tywin.die()
+    print(tywin.is_alive)
+    print(tywin.__doc__)

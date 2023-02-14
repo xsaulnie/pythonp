@@ -30,3 +30,19 @@ class Lannister(GotCharacter):
     def die(self):
         self.is_alive = False
     
+if __name__ == "__main__":
+    arya=Stark("Arya")
+    print(arya.__dict__)
+    arya.print_house_words()
+    print(arya.is_alive)
+    arya.die()
+    print(arya.is_alive)
+    print(arya.__doc__)
+
+    tywin=Lannister("Tywin")
+    print(tywin.__dict__)
+    tywin.print_house_words()
+    print(tywin.is_alive)
+    tywin.die()
+    print(tywin.is_alive)
+    print(tywin.__doc__)
