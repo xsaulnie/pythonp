@@ -3,6 +3,9 @@ class Vector:
         dim1=0
         dim2=0
         if (type(arg) is int):
+            if (arg < 0):
+                print("Error Vector constructor : range must be positiv")
+                return
             self.shape = (arg, 1)
             self.values = []
             for x in range(arg):
@@ -10,51 +13,53 @@ class Vector:
             return
         if (type(arg) is tuple):
             if (len(arg) != 2):
-                print("Error constructor : range is incorrect")
+                print("Error Vector constructor : range is incorrect")
                 return
             if (type(arg[0]) is not int or type(arg[1]) is not int):
-                print("Error constructor : range is incorrect")
+                print("Error Vector constructor : range is incorrect")
                 return
             if (arg[1] < arg[0]):
-                print("Error constructor : range start is greater than its end")
+                print("Error Vector constructor : range start is greater than its end")
                 return
             self.shape = (arg[1] - arg[0], 1)
             self.values = []
             for x in range(arg[0], arg[1]):
                 self.values.append([float(x)])
+            if (arg[0] == arg[1]):
+                self.values.append([])
             return
 
         if (type(arg) is not list):
-            print("Error constructor : arg is not a list")
+            print("Error Vector constructor : arg is not a list")
             return
         if (type(arg[0]) is not list):
-            print("Error constructor : arg is not a list of list")
+            print("Error Vector constructor : arg is not a list of list")
             return
         dim2 = len(arg[0])
         for x in arg:
             if (type(x) is not list):
-                print("Error constructor : list on arg is incorrect")
+                print("Error Vector constructor : list on arg is incorrect")
                 return
             for y in x:
                 if (type(y) is not float):
-                    print("Error constructor : element in vector is not a float")
+                    print("Error Vector constructor : element in vector is not a float")
                     return
             if (len(x) is not dim2):
-                print("Error constructor : dimention on arg are inhomogeneous")
+                print("Error Vector constructor : dimention on arg are inhomogeneous")
                 return
             dim1 += 1
         if (dim1 != 1 and dim2 != 1):
-            print("Error constructor : dimention on are are incorrect : it is not a vector")
+            print("Error Vector constructor : dimention on are are incorrect : it is not a vector")
             return
         self.values = arg
         self.shape = (dim1, dim2)
 
     def dot(self, vec):
         if (type(vec) is not Vector):
-            print("Error vector dot method : wrong argument")
+            print("Error Vector dot method : wrong argument")
             return
         if (self.shape != vec.shape):
-            print("Error vector dot method : dimentions of dot product differ")
+            print("Error Vector dot method : dimentions of dot product differ")
             return
         
         ret = 0
@@ -132,6 +137,8 @@ class Vector:
         if (type(scalar) is not int and type(scalar) is not float):
             print("Error Vector truediv operator : wrong type")
             return
+        if scalar == 0 or scalar == 0.0:
+            raise ZeroDivisionError("division by zero on Vector")
         if self.shape[0] == 1:
             ret = [[]]
             for x in self.values[0]:

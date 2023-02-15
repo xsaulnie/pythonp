@@ -39,9 +39,8 @@ class Bank(object):
             if (x.startswith("zip")):
                 correct_startz = True
             if (x.startswith("addr")):
-                correct_starta = True
-        
-        return correct_starta and correct_startz
+                correct_starta = True  
+        return correct_starta or correct_startz
 
     def add(self, new_account):
         """ Add new_account in the Bank
@@ -68,7 +67,7 @@ class Bank(object):
         ori = None
         des = None
 
-        if (not type(amount) is float):
+        if (not type(amount) is float and not type(amount) is int):
             return (False)
         if (not type(origin) is str or not type(dest) is str):
             return (False)
@@ -135,14 +134,45 @@ class Bank(object):
             if (x.startswith("addr")):
                 addrstart=True
 
-        if not zipstart:
-            acc.__dict__.update({"zip" : '0-0'})
-        if not addrstart:
-            acc.__dict__.update({"addr" : '-1'})
+        if (addrstart == False and zipstart == False):
+            if not zipstart:
+                acc.__dict__.update({"zip" : '0-0'})
+            if not addrstart:
+                acc.__dict__.update({"addr" : '-1'})
 
         if (len(acc.__dict__) % 2 == 0):
-            acc.__dict__.update({"sup" : "parity check"})
-
-        print(acc.__dict__, len(acc.__dict__))
+            name = "sup"
+            while (True):
+                if (not name in attr):
+                    break
+                name = "_" + name
+            acc.__dict__.update({name : "parity check"})
         
         return (True)
+
+if (__name__ == "__main__"):
+    bank = Bank()
+    bank.add(Account(
+        'Smith Jane',
+        zip='911-745',
+        value=1000.0,
+        ref='1044618427ff2782f0bbece0abd05f31'
+    ))
+    bank.add(Account(
+        'William John',
+        zip='100-064',
+        value=6460.0,
+        ref='58ba2b9954cd278eda8a84147ca73c87',
+        info=None
+    ))
+
+    if bank.transfer('William John', 'Smith Jane', 1000.0) is False:
+        print('Failed')
+
+        bank.fix_account('William John')
+        bank.fix_account('Smith Jane')
+
+    if bank.transfer('William John', 'Smith Jane', 1000.0) is False:
+        print('Failed')
+    else:
+        print('Success')

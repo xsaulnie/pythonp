@@ -26,12 +26,13 @@ class Book:
                     print(rec_in_recipes_list)
                     return rec_in_recipes_list
         print(f"No recipe {name} on the book {self.name}")
+        return None
         
-    def get_recipes_by_type(self, recipe_type):
+    def get_recipes_by_types(self, recipe_type):
         """Get all recipe names for a given recipe_type """
         if (recipe_type not in Book.key_of_recipes_list):
             print(f"{recipe_type} is not a valid recipe_type")
-            return
+            return None
         return(self.recipes_list[recipe_type])
 
     def add_recipe(self, recipe):

@@ -1,8 +1,11 @@
 class Recipe:
-    def __init__(self, name, cooking_lvl, cooking_time, ingredients, recipe_type, description="No description"):
+    def __init__(self, name, cooking_lvl, cooking_time, ingredients, description, recipe_type):
         type_of_recipe = ["starter", "lunch", "dessert"]
         if type(name) is not str:
             print("Recipe constructor error : name is not a string")
+            return
+        elif (len(name) == 0):
+            print("Recipe constructor error : name is empty")
             return
         elif (type(cooking_lvl) is not int):
             print("Recipe constructor error : cooking_lvl is not an int")
@@ -19,11 +22,17 @@ class Recipe:
         elif (type(ingredients) is not list):
             print("Recipe constructor error : ingredients must be a list")
             return
+        elif (len(ingredients) == 0):
+            print("Recipe constructor error : list of ingredient is empty")
+            return
         elif (self.list_of_str(ingredients) is False):
             print("Recipe constructor error : ingredients must be a list of string")
             return   
         elif type(recipe_type) is not str:
             print("Recipe constructor error : recipe_type is not a string")
+            return
+        elif (len(recipe_type) == 0):
+            print("Recipe constructor error : recipe_type is empty")
             return
         elif (not recipe_type in type_of_recipe):
             print("Recipe constructor error : recipe_type must be 'starter' or 'lunch' or 'dessert' ")
@@ -47,21 +56,6 @@ class Recipe:
         for x in lst:
             if (type(x) is not str):
                 return False
+            if (len(x) == 0):
+                return False
         return True
-
-if __name__ == "__main__":
-    arya=Stark("Arya")
-    print(arya.__dict__)
-    arya.print_house_words()
-    print(arya.is_alive)
-    arya.die()
-    print(arya.is_alive)
-    print(arya.__doc__)
-
-    tywin=Lannister("Tywin")
-    print(tywin.__dict__)
-    tywin.print_house_words()
-    print(tywin.is_alive)
-    tywin.die()
-    print(tywin.is_alive)
-    print(tywin.__doc__)

@@ -1,5 +1,5 @@
 import random
-
+import sys
 def generator(text, sep=" ", option=None):
     """Splits the text according to sep value and yield the substrings.
     option precise if a action is performed to the substrings before it is yielded."""
@@ -32,6 +32,20 @@ def generator(text, sep=" ", option=None):
     for i in res2:
         yield(i)
 
+
+txt="This is a simple string for a basic test. Very simple."
+for elem in generator(txt, sep=' '):
+    print(elem)
+
+for elem in generator(txt, sep='.'):
+    print(elem)
+
+for elem in generator(txt, sep='i'):
+    print(elem)
+
+for elem in generator(txt, sep='si'):
+    print(elem)
+sys.exit()
 text = "Le Lorem Ipsum est simplement du faux texte."
 for word in generator(text, sep=" "):
     print(word)
