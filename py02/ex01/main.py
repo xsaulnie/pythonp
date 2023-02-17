@@ -5,13 +5,16 @@ def what_are_the_vars(*arg, **kwarg):
 
     for key, val in kwarg.items():
         if (key.startswith("var_")):
-            return None
+            if key in ret.keys():
+                return None
         ret[key] = val
     return(ObjectC(ret))
 
 # ... Your code here ...
 class ObjectC(object):
     def __init__(self, obj):
+        if (not type(obj) is dict):
+            return
         self.__dict__.update(obj)
 
 
