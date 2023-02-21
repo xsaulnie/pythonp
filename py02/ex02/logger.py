@@ -16,7 +16,11 @@ class CoffeeMachine():
     def log(function):
         prog_name = {"start_machine" : "Start Machine", "make_coffee" : "Make Cofee", "boil_water" : "Boil Water", "add_water" : "Add Water"}
         def wrapper(*args, **kwargs):
-            file = open("machine.log", "a")
+            try :
+                file = open("machine.log", "a")
+            except:
+                print("Can't open machine.log, no logs saved")
+                return function(*args, **kwargs)
             deb = time.clock_gettime_ns(time.CLOCK_REALTIME)
             ret = function(*args, **kwargs)
             elapsed = time.clock_gettime_ns(time.CLOCK_REALTIME) - deb
