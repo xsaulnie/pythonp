@@ -1,4 +1,5 @@
 class GotCharacter:
+    """A class for all Game of Thrones characters."""
     def __init__(self, first_name, is_alive = True):
         if (type(first_name) is not str):
             print("Your first name must be a string")
