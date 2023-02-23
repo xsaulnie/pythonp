@@ -1,6 +1,4 @@
-import imageio as iio
 from matplotlib import pyplot as plt
-import matplotlib
 
 class ImageProcessor():
     def load(self, name):
@@ -20,9 +18,19 @@ class ImageProcessor():
 
     def display(self, array):
         plt.imshow(array, interpolation='nearest')
+        plt.axis('off')
         plt.show()
 
 
-name = 'nothing'
 imp = ImageProcessor()
-arr = imp.load(name)
+arr = imp.load('no_exist')
+print(arr)
+
+arr = imp.load('nothing')
+print(arr)
+
+arr = imp.load('42AI.png')
+print(arr)
+
+imp.display(arr)
+
