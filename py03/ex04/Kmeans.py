@@ -1,4 +1,7 @@
 import numpy as np
+import sys
+import random
+random.seed(42)
 
 class CsvReader():
     def __init__(self, filename=None, sep=',', header=False, skip_top=0, skip_bottom=0):
@@ -119,6 +122,7 @@ class KmeansClustering:
         self.ncentroid = ncentroid # number of centroids
         self.max_iter = max_iter # number of max iterations to update the centroids
         self.centroids = [] # values of the centroids
+
     def fit(self, X):
         """
         Run the K-means clustering algorithm.
@@ -133,7 +137,31 @@ class KmeansClustering:
         -------
         This function should not raise any Exception.
         """
-        print("fit")
+        def randf(deb, end):
+            return (random.random() * (end - deb) + deb )
+        min_max=[]
+        for x in range(1, 4):
+            min_max.append([float(min(X[:, x])), float(max(X[:, x]))])
+        #print(min_max)
+        for x in range(self.ncentroid):
+            self.centroids.append([randf(min_max[0][0], min_max[0][1]), randf(min_max[1][0], min_max[1][1]), randf(min_max[2][0], min_max[2][1])])
+        #print("centroids", self.centroids)
+        npcentroid = np.array(self.centroids)
+
+
+        for citizen in X[:, 1:]:
+            dist = np.array([])
+            for centroid in npcentroid:
+                dist = np.append(dist, np.linalg.norm(citizen-centroid))
+            print(dist)
+
+
+
+
+        # for x in range (self.ncentroid):
+        #     print("hello")
+        #     self.centroids.append(randf(min_max[0][0], min_max[0][1]))
+        # print(self.centroids)
 
     def predict(self, X):
         """
@@ -150,7 +178,55 @@ class KmeansClustering:
         """
         print("predict")
 
-with CsvReader("solar_system_census.csv", header=True, sep=",") as file:
-    data = np.array(file.getdata())
-    head = file.getheader()
-    print(data)
+if (__name__ == "__main__"):
+    if len(sys.argv) > 4:
+        print("Wrong number of argument")
+        sys.exit()
+    kwarg={}
+    kwarg["ncentroid"] = 5
+    kwarg["max_iter"] = 20
+
+    for arg in sys.argv[1:]:
+        sp = arg.split('=')
+        if (len(sp) != 2):
+            print("Wrong Argument")
+            sys.exit()
+        kwarg[sp[0]] = sp[1]
+    
+    if not "filepath" in kwarg.keys():
+        print("no filepath")
+        sys.exit()
+    if (len(kwarg) > 3):
+        print("Bad argument")
+        sys.exit()
+    if (type(kwarg["ncentroid"]) is str and not kwarg["ncentroid"].isdigit()) or (type(kwarg["max_iter"]) is str and not kwarg["max_iter"].isdigit()):
+        print("ncentroid and max_iter must be integer")
+        sys.exit()
+    valid_arg = ["filepath", "ncentroid", "max_iter"]
+    for arg in kwarg.keys():
+        if not arg in valid_arg:
+            print(f"invalid key argument {arg}")
+            sys.exit()
+    kwarg["max_iter"] = int(kwarg["max_iter"])
+    kwarg["ncentroid"] = int(kwarg["ncentroid"])
+    
+
+    with CsvReader(kwarg["filepath"], header=True, sep=",") as file:
+        if file == None:
+            sys.exit()
+        data = np.array(file.getdata()).astype(float)
+        head = file.getheader()
+
+        kmc = KmeansClustering(kwarg["max_iter"], kwarg["ncentroid"])
+
+        # print(data)
+        # print()
+        # print(data[:, 1:])
+        kmc.fit(data)
+
+
+            # print(data[:, 2].min, data[:, 2].max)
+            # print(data[:, 3].min, data[:, 3].max)
+
+
+
