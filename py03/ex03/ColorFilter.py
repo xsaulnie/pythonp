@@ -71,9 +71,7 @@ class ColorFilter():
         if (arr.shape[2] != 4):
             return None
 
-
         m_blue = np.copy(array)
-        print(m_blue.shape)
         x = 0
         for lin in array:
             b = array[x][:, 2]
@@ -201,48 +199,94 @@ class ColorFilter():
         -------
         This function should not raise any Exception.
         """
+
         if not isinstance(array, np.ndarray):
             return None
         if (len(array.shape) != 3):
             return None
         if (arr.shape[2] != 4):
             return None
-        if (filter != "w" and filter != "weights" and filter != "m" and filter != "mean"):
+        if (filter != "w" and filter != "weight" and filter != "m" and filter != "mean"):
             return None
-        if (filter == "weights" or filter == "w"):
+        if (filter == "weight" or filter == "w"):
+            if not "weights" in kwargs.keys():
+                return None
             if (len(kwargs["weights"]) != 3):
                 return None
+            w = kwargs["weights"]
+            for num in w:
+                if (not type(num) is float):
+                    return None
+            if (w[0] + w[1] + w[2] != 1):
+                return None
         res = array.astype(float)
-        print(res)
-        return array
-        
+
+        if (filter == "mean" or filter == "m"):        
+            for lin in res:
+                for col in lin:
+                    col[:3] = np.broadcast_to(sum(col[:3]) / 3, (1, 3))
+            return res
+
+        for lin in res:
+            for col in lin:
+                col[:3] = np.broadcast_to(col[0] * w[0] + col[1] * w[1] + col[2] * w[2], (1, 3))
+        return res
 
 
-        
 imp = ImageProcessor()
 
 arr = imp.load('elon_canaGAN.png')
 
 cf = ColorFilter()
 
-#imp.display(cf.invert(arr))
-#imp.display(cf.to_blue(arr))een(
-#imp.display(cf.to_green(arr))
-#imp.display(cf.to_red(arr))
+inv = cf.invert(arr)
+#imp.display(inv)
+blue = cf.to_blue(arr)
+#imp.display(blue)
+green = cf.to_green(arr)
+#imp.display(green)
+red = cf.to_red(arr)
+#imp.display(red)
+celluloid = cf.to_celluloid(arr)
+#imp.display(celluloid)
+gray = cf.to_grayscale(arr, "weight", weights = [0.2, 0.3, 0.5])
+#imp.display(gray)
+
+plt.subplot(2, 3, 1)
+plt.imshow(gray, interpolation='nearest')
+plt.axis('off')
+plt.title("Grey Musk")
+
+plt.subplot(2, 3, 2)
+plt.imshow(inv, interpolation='nearest')
+plt.axis('off')
+plt.title("Invert Musk")
+
+plt.subplot(2, 3, 3)
+plt.imshow(blue, interpolation='nearest')
+plt.axis('off')
+plt.title("Blue Musk")
+
+plt.subplot(2, 3, 4)
+plt.imshow(green, interpolation='nearest')
+plt.axis('off')
+plt.title("Green Musk")
+
+plt.subplot(2, 3, 5)
+plt.imshow(red, interpolation='nearest')
+plt.axis('off')
+plt.title("Red Musk")
+
+plt.subplot(2, 3, 6)
+plt.imshow(celluloid, interpolation='nearest')
+plt.axis('off')
+plt.title("Celluloid Musk")
+
+plt.show()
 
 # a = np.array([[1, 2, 3], [4, 5, 6]])
 
 # b = np.array([[1, 1, 1], [1, 1, 1]])
-imp.display(cf.to_celluloid(arr))
 
-res = np.arange(5 , 10, 0.5)
-print(res)
-
-#imp.display(cf.to_grayscale(arr, 'weight', weights = [0.2, 0.3, 0.5]))
-
-x = 8
-print(np.broadcast_to(x, (1, 3)))
-
-print(arr.shape)
-
+# print(np.broadcast_to(2, (1, 3)))
 

@@ -1,12 +1,10 @@
 import numpy as np
 import sys
 import random
-random.seed(42)
+
 
 class CsvReader():
     def __init__(self, filename=None, sep=',', header=False, skip_top=0, skip_bottom=0):
-        # ... Your code here ...
-
         try:
             fi = open(filename, "r")
         except:
@@ -122,6 +120,8 @@ class KmeansClustering:
         self.ncentroid = ncentroid # number of centroids
         self.max_iter = max_iter # number of max iterations to update the centroids
         self.centroids = [] # values of the centroids
+        self.location = {}
+        self.count = [0 for x in range (self.ncentroid)] 
 
     def fit(self, X):
         """
@@ -137,6 +137,7 @@ class KmeansClustering:
         -------
         This function should not raise any Exception.
         """
+        #random.seed(1532543531)
         def randf(deb, end):
             return (random.random() * (end - deb) + deb )
         min_max=[]
@@ -147,13 +148,63 @@ class KmeansClustering:
             self.centroids.append([randf(min_max[0][0], min_max[0][1]), randf(min_max[1][0], min_max[1][1]), randf(min_max[2][0], min_max[2][1])])
         #print("centroids", self.centroids)
         npcentroid = np.array(self.centroids)
+        #print(npcentroid)
 
+        newcentroid = np.full(npcentroid.shape, 0.0)
+        #print(newcentroid)
 
-        for citizen in X[:, 1:]:
-            dist = np.array([])
-            for centroid in npcentroid:
-                dist = np.append(dist, np.linalg.norm(citizen-centroid))
-            print(dist)
+        for x in range(self.max_iter):
+            for citizen in X:
+                dist = np.array([])
+                for centroid in npcentroid:
+                    #print("dist", dist, end="\n\n")
+                    dist = np.append(dist, np.linalg.norm(citizen[1:] - centroid))
+
+                #print("dist", dist)
+
+                mincentroid = np.where(dist == np.min(dist))[0][0]
+                # print("cit", citizen[1:])
+                # print("n", newcentroid[mincentroid])
+                newcentroid[mincentroid] = newcentroid[mincentroid] + citizen[1:]
+                self.location[int(citizen[0])] = int(mincentroid)
+                self.count[mincentroid] = self.count[mincentroid] + 1
+            #print(self.location)
+
+            #print("prenew", newcentroid, end="\n\n")
+
+            for y in range (self.ncentroid):
+                if (self.count[y] == 0):
+                    newcentroid[y] = npcentroid[y]
+                else:
+                    newcentroid[y] = newcentroid[y] / self.count[y] 
+
+            # print( "new ", newcentroid, end="\n\n")
+            # print("cur", npcentroid,end="\n\n")
+            npcentroid = np.copy(newcentroid)
+            #print("cur after", npcentroid, end="\n\n")
+            newcentroid = np.copy(np.full(npcentroid.shape, 0.0))
+            # print("new after", newcentroid, end="\n\n")
+            # print(npcentroid, end="\n\n")
+            # print("count", self.count)
+            #print(self.count)
+            #print(x, self.max_iter)
+            if (x != self.max_iter - 1):
+                self.count = [0] * self.ncentroid
+            #print(npcentroid)
+            #print(self.location)
+
+        self.centroids = []
+        #print(npcentroid)
+        for lin in range(npcentroid.shape[0]):
+            #self.centroids.append([])
+            resl = []
+            for col in range(npcentroid.shape[1]):
+                #self.centroids[lin].append(npcentroid[lin][col])
+                #print(npcentroid[lin][col])
+                resl.append(npcentroid[lin][col])
+            self.centroids.append(resl)
+            #print(end="\n")
+
 
 
 
@@ -176,7 +227,107 @@ class KmeansClustering:
         -------
         This function should not raise any Exception.
         """
-        print("predict")
+        npcentroid = np.array(self.centroids)
+        print(self.centroids)
+        res = np.array([])
+        for citizen in X:
+            dist = np.array([])
+            for centroid in npcentroid:
+                dist = np.append(dist, np.linalg.norm(citizen[1:] - centroid))
+
+            mincentroid = np.where(dist == np.min(dist))[0][0]
+            res = np.concatenate((res, [mincentroid]),  axis = 0)
+
+        return res
+
+def fileRecoveryStatistics(lstats, count):
+
+    lstat = lstats
+    heightmax = lstat[0][0]
+    As = lstat[0]
+    asidx = 0
+    print(lstat)
+    for idx, lin in enumerate(lstat):
+        for idl, col in enumerate(lin):
+            #print("idl", idl, "col", col, "heightmax", heightmax)
+            if idl == 0 and heightmax < col:
+                heightmax = col
+                As = lin
+                asidx = idx
+    lstat.remove(As)
+    one = lstat[0]
+    two = lstat[1]
+    three = lstat[2]
+
+    Er = "not"
+
+    def retshift(r3, r0, r1, r2):
+        res = [0] * 4
+
+        if r0 >= r3:
+            r0 = r0 + 1
+        if r1 >= r3:
+            r1 = r1 + 1
+        if r2 >= r3:
+            r2 = r2 + 1
+        res[0] = r0
+        res[1] = r1
+        res[2] = r2
+        res[3] = r3
+        return res
+
+    if one[1] > two[1]:
+        if three[0] > one[0]:
+            Er = one
+            Vn = two
+            Mr = three
+            ret = retshift(asidx, 1, 0, 2)
+
+    if two[1] > three[1]:
+        if one[0] > two[0]:
+            Er = two
+            Vn = three
+            Mr = one
+            ret = retshift(asidx, 2, 1, 0)
+
+    if three[1] > one[1]:
+        if two[0] > three[0]:
+            Er = three
+            Vn = one
+            Mr = two
+            ret = retshift(asidx, 0, 2, 1)
+
+    if one[1] < two[1]:
+        if three[0] > two[0]:
+            Er = two
+            Vn = one
+            Mr = three
+            ret = retshift(asidx, 0, 1, 2)
+
+    if two[1] < three[1]:
+        if one[0] > three[0]:
+            Er = three
+            Vn = two
+            Mr = one
+            ret = retshift(asidx, 1, 2, 0)
+
+    if three[1] < one[1]:
+        if two[0] > one[0]:
+            Er = one
+            Vn = three
+            Mr = two
+            ret = retshift(asidx, 2, 0, 1)
+
+    if Er == "not":
+        print("Citys can not be put on data centroid")
+        return None
+    else:
+        print("The flying cities of Venus centroid : ", Vn, f"Counting {count[ret[0]]} citizens")
+        print("United nations of Earth centroid : ", Er, f"Counting {count[ret[1]]} citizens")
+        print("Mars Republic centroid :", Mr, f"Counting {count[ret[2]]} citizens")
+        print("Asteroids' Belt colonies centroid : ", As, f"Counting {count[ret[3]]} citizens")
+        print("ret", ret)
+        return ret
 
 if (__name__ == "__main__"):
     if len(sys.argv) > 4:
@@ -214,19 +365,20 @@ if (__name__ == "__main__"):
     with CsvReader(kwarg["filepath"], header=True, sep=",") as file:
         if file == None:
             sys.exit()
-        data = np.array(file.getdata()).astype(float)
+        data = np.array(file.getdata()).astype(float) #tocheck
         head = file.getheader()
 
         kmc = KmeansClustering(kwarg["max_iter"], kwarg["ncentroid"])
 
-        # print(data)
-        # print()
-        # print(data[:, 1:])
         kmc.fit(data)
-
-
-            # print(data[:, 2].min, data[:, 2].max)
-            # print(data[:, 3].min, data[:, 3].max)
+        if kwarg["ncentroid"] == 4:
+            fileRecoveryStatistics(kmc.centroids, kmc.count)
+            print(kmc.predict(data))
+        else:
+            print("Coordinate of the centroids :")
+            print(kmc.centroids)
+            print("Number of element in each centroids (by order)")
+            print(kmc.count)
 
 
 
