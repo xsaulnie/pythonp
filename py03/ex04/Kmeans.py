@@ -1,6 +1,8 @@
 import numpy as np
 import sys
 import random
+import os
+import matplotlib.pyplot as plt
 
 
 class CsvReader():
@@ -9,6 +11,11 @@ class CsvReader():
             fi = open(filename, "r")
         except:
             print(f"Error on opening '{filename}' file")
+            self.error_file = True
+            return
+
+        if os.stat(filename).st_size == 0:
+            print(f"Error file {filename} is empty")
             self.error_file = True
             return
         
@@ -85,10 +92,14 @@ class CsvReader():
 
         return (ret)
 
-    @staticmethod
-    def check_corruption(fi, sep, head):
+    def check_corruption(self, fi, sep, head):
         full_split = []
-        all_body = fi.read()
+        try:
+            all_body = fi.read()
+        except:
+            self.error_file = True
+            return
+
         if (all_body[0] == '\n'):
             print("1")
             return True
@@ -137,40 +148,27 @@ class KmeansClustering:
         -------
         This function should not raise any Exception.
         """
-        #random.seed(1532543531)
         def randf(deb, end):
             return (random.random() * (end - deb) + deb )
         min_max=[]
         for x in range(1, 4):
             min_max.append([float(min(X[:, x])), float(max(X[:, x]))])
-        #print(min_max)
         for x in range(self.ncentroid):
             self.centroids.append([randf(min_max[0][0], min_max[0][1]), randf(min_max[1][0], min_max[1][1]), randf(min_max[2][0], min_max[2][1])])
-        #print("centroids", self.centroids)
         npcentroid = np.array(self.centroids)
-        #print(npcentroid)
 
         newcentroid = np.full(npcentroid.shape, 0.0)
-        #print(newcentroid)
 
         for x in range(self.max_iter):
             for citizen in X:
                 dist = np.array([])
                 for centroid in npcentroid:
-                    #print("dist", dist, end="\n\n")
                     dist = np.append(dist, np.linalg.norm(citizen[1:] - centroid))
 
-                #print("dist", dist)
-
                 mincentroid = np.where(dist == np.min(dist))[0][0]
-                # print("cit", citizen[1:])
-                # print("n", newcentroid[mincentroid])
                 newcentroid[mincentroid] = newcentroid[mincentroid] + citizen[1:]
                 self.location[int(citizen[0])] = int(mincentroid)
                 self.count[mincentroid] = self.count[mincentroid] + 1
-            #print(self.location)
-
-            #print("prenew", newcentroid, end="\n\n")
 
             for y in range (self.ncentroid):
                 if (self.count[y] == 0):
@@ -178,41 +176,17 @@ class KmeansClustering:
                 else:
                     newcentroid[y] = newcentroid[y] / self.count[y] 
 
-            # print( "new ", newcentroid, end="\n\n")
-            # print("cur", npcentroid,end="\n\n")
             npcentroid = np.copy(newcentroid)
-            #print("cur after", npcentroid, end="\n\n")
             newcentroid = np.copy(np.full(npcentroid.shape, 0.0))
-            # print("new after", newcentroid, end="\n\n")
-            # print(npcentroid, end="\n\n")
-            # print("count", self.count)
-            #print(self.count)
-            #print(x, self.max_iter)
             if (x != self.max_iter - 1):
                 self.count = [0] * self.ncentroid
-            #print(npcentroid)
-            #print(self.location)
 
         self.centroids = []
-        #print(npcentroid)
         for lin in range(npcentroid.shape[0]):
-            #self.centroids.append([])
             resl = []
             for col in range(npcentroid.shape[1]):
-                #self.centroids[lin].append(npcentroid[lin][col])
-                #print(npcentroid[lin][col])
                 resl.append(npcentroid[lin][col])
             self.centroids.append(resl)
-            #print(end="\n")
-
-
-
-
-
-        # for x in range (self.ncentroid):
-        #     print("hello")
-        #     self.centroids.append(randf(min_max[0][0], min_max[0][1]))
-        # print(self.centroids)
 
     def predict(self, X):
         """
@@ -240,16 +214,14 @@ class KmeansClustering:
             res[idx] = int(mincentroid)
         return res
 
-def fileRecoveryStatistics(lstats, count):
+def fileRecoveryStatistics(lstats, count, head):
 
     lstat = lstats[:]
     heightmax = lstat[0][0]
     As = lstat[0]
     asidx = 0
-    print(lstat)
     for idx, lin in enumerate(lstat):
         for idl, col in enumerate(lin):
-            #print("idl", idl, "col", col, "heightmax", heightmax)
             if idl == 0 and heightmax < col:
                 heightmax = col
                 As = lin
@@ -322,12 +294,34 @@ def fileRecoveryStatistics(lstats, count):
         print("Citys can not be put on data centroid")
         return None
     else:
+        if type(head) is list and len(head) == 4:
+            print(f"Centroid coordinate using : \t\t{head[1]}, \t    {head[2]}, \t\t{head[3]}")
         print("The flying cities of Venus centroid : ", Vn, f"Counting {count[ret[0]]} citizens")
         print("United nations of Earth centroid : ", Er, f"Counting {count[ret[1]]} citizens")
         print("Mars Republic centroid :", Mr, f"Counting {count[ret[2]]} citizens")
         print("Asteroids' Belt colonies centroid : ", As, f"Counting {count[ret[3]]} citizens")
-        print("ret", ret)
         return ret
+
+def coloniecolor(deter, nb):
+    col = deter.index(nb)
+    if (col == 0):
+        return('violet')
+    elif (col == 1):
+        return('brown')
+    elif (col == 2):
+        return('red')
+    elif(col == 3):
+        return ('black')
+def colonielabel(deter, nb):
+    col = deter.index(nb)
+    if (col == 0):
+        return("Venus")
+    elif (col == 1):
+        return("Earth")
+    elif (col == 2):
+        return ("Mars")
+    elif (col == 3):
+        return ("Asteroid")
 
 if (__name__ == "__main__"):
     if len(sys.argv) > 4:
@@ -360,26 +354,183 @@ if (__name__ == "__main__"):
             sys.exit()
     kwarg["max_iter"] = int(kwarg["max_iter"])
     kwarg["ncentroid"] = int(kwarg["ncentroid"])
+
+    if (kwarg["max_iter"] <= 0):
+        print("max_iter must be strictly positiv")
+        sys.exit()
     
 
     with CsvReader(kwarg["filepath"], header=True, sep=",") as file:
         if file == None:
-            sys.exit()
-        data = np.array(file.getdata()).astype(float) #tocheck
+            os._exit(1)
+        data = np.array(file.getdata()).astype(float)
         head = file.getheader()
 
         kmc = KmeansClustering(kwarg["max_iter"], kwarg["ncentroid"])
 
         kmc.fit(data)
         if kwarg["ncentroid"] == 4:
-            fileRecoveryStatistics(kmc.centroids, kmc.count)
-            print(kmc.predict(data))
+            if (data.shape[1] != 4):
+                print("Coordinate of the centroids using", ' '.join(head[1:]))
+                for x in range(len(kmc.centroids)):
+                    print(f"Centroid {x} : ", kmc.centroids[x], f"counting {kmc.count[x]} citizens")
+                os._exit(0)
+
+            determine = fileRecoveryStatistics(kmc.centroids, kmc.count, head)
+            if determine == None:
+                os._exit(0)
+
+            pred = kmc.predict(data)
+
+            x = data[:, [0, 1]]
+            y = data[:, [0, 2]]
+
+            x0= [idx[1] for idx in x if pred[int(idx[0])][0] == 0]
+            y0= [idx[1] for idx in y if pred[int(idx[0])][0] == 0]
+
+            x1= [idx[1] for idx in x if pred[int(idx[0])][0] == 1]
+            y1= [idx[1] for idx in y if pred[int(idx[0])][0] == 1]
+
+            x2= [idx[1] for idx in x if pred[int(idx[0])][0] == 2]
+            y2= [idx[1] for idx in y if pred[int(idx[0])][0] == 2]
+
+            x3= [idx[1] for idx in x if pred[int(idx[0])][0] == 3]
+            y3= [idx[1] for idx in y if pred[int(idx[0])][0] == 3]
+
+
+            fig, ax = plt.subplots(2, 2, figsize=(14, 10))
+            plt.get_current_fig_manager().canvas.manager.set_window_title('Kmeans.py')
+            fig.suptitle("K-means Clustering, %d iterations 4 centroids." % (kwarg["max_iter"]))
+
+            ax[0][0].scatter(x0, y0, c=coloniecolor(determine, 0))
+            ax[0][0].scatter(x1, y1, c=coloniecolor(determine, 1))
+            ax[0][0].scatter(x2, y2, c=coloniecolor(determine, 2))
+            ax[0][0].scatter(x3, y3, c=coloniecolor(determine, 3))
+
+            ax[0][0].scatter(kmc.centroids[0][0], kmc.centroids[0][1],s=300, marker="*", c=coloniecolor(determine, 0))
+            ax[0][0].text(x=kmc.centroids[0][0], y=kmc.centroids[0][1], s=colonielabel(determine, 0))
+            ax[0][0].scatter(kmc.centroids[1][0], kmc.centroids[1][1],s=300, marker="*", c=coloniecolor(determine, 1))
+            ax[0][0].text(x=kmc.centroids[1][0], y=kmc.centroids[1][1], s=colonielabel(determine, 1))
+            ax[0][0].scatter(kmc.centroids[2][0], kmc.centroids[2][1],s=300, marker="*", c=coloniecolor(determine, 2))
+            ax[0][0].text(x=kmc.centroids[2][0], y=kmc.centroids[2][1], s=colonielabel(determine, 2))
+            ax[0][0].scatter(kmc.centroids[3][0], kmc.centroids[3][1],s=300, marker="*", c=coloniecolor(determine, 3))
+            ax[0][0].text(x=kmc.centroids[3][0], y=kmc.centroids[3][1], s=colonielabel(determine, 3))
+
+            ax[0][0].set_title('Height-Weight relation')
+            ax[0][0].set_xlabel('height')
+            ax[0][0].set_ylabel('weight')
+
+            x = data[:, [0, 2]]
+            y = data[:, [0, 3]]
+
+            x0= [idx[1] for idx in x if pred[int(idx[0])][0] == 0]
+            y0= [idx[1] for idx in y if pred[int(idx[0])][0] == 0]
+
+            x1= [idx[1] for idx in x if pred[int(idx[0])][0] == 1]
+            y1= [idx[1] for idx in y if pred[int(idx[0])][0] == 1]
+
+            x2= [idx[1] for idx in x if pred[int(idx[0])][0] == 2]
+            y2= [idx[1] for idx in y if pred[int(idx[0])][0] == 2]
+
+            x3= [idx[1] for idx in x if pred[int(idx[0])][0] == 3]
+            y3= [idx[1] for idx in y if pred[int(idx[0])][0] == 3]
+
+            ax[0][1].scatter(x0, y0, c=coloniecolor(determine, 0))
+            ax[0][1].scatter(x1, y1, c=coloniecolor(determine, 1))
+            ax[0][1].scatter(x2, y2, c=coloniecolor(determine, 2))
+            ax[0][1].scatter(x3, y3, c=coloniecolor(determine, 3))
+
+            ax[0][1].scatter(kmc.centroids[0][1], kmc.centroids[0][2],s=300, marker="*", c=coloniecolor(determine, 0))
+            ax[0][1].text(x=kmc.centroids[0][1], y=kmc.centroids[0][2], s=colonielabel(determine, 0))
+            ax[0][1].scatter(kmc.centroids[1][1], kmc.centroids[1][2],s=300, marker="*", c=coloniecolor(determine, 1))
+            ax[0][1].text(x=kmc.centroids[1][1], y=kmc.centroids[1][2], s=colonielabel(determine, 1))
+            ax[0][1].scatter(kmc.centroids[2][1], kmc.centroids[2][2],s=300, marker="*", c=coloniecolor(determine, 2))
+            ax[0][1].text(x=kmc.centroids[2][1], y=kmc.centroids[2][2], s=colonielabel(determine, 2))
+            ax[0][1].scatter(kmc.centroids[3][1], kmc.centroids[3][2],s=300, marker="*", c=coloniecolor(determine, 3))
+            ax[0][1].text(x=kmc.centroids[3][1], y=kmc.centroids[3][2], s=colonielabel(determine, 3))
+
+            ax[0][1].set_title('Weight-Bone_density relation')
+            ax[0][1].set_xlabel('weight')
+            ax[0][1].set_ylabel('bone_density')
+
+            x = data[:, [0, 1]]
+            y = data[:, [0, 3]]
+
+            x0= [idx[1] for idx in x if pred[int(idx[0])][0] == 0]
+            y0= [idx[1] for idx in y if pred[int(idx[0])][0] == 0]
+
+            x1= [idx[1] for idx in x if pred[int(idx[0])][0] == 1]
+            y1= [idx[1] for idx in y if pred[int(idx[0])][0] == 1]
+
+            x2= [idx[1] for idx in x if pred[int(idx[0])][0] == 2]
+            y2= [idx[1] for idx in y if pred[int(idx[0])][0] == 2]
+
+            x3= [idx[1] for idx in x if pred[int(idx[0])][0] == 3]
+            y3= [idx[1] for idx in y if pred[int(idx[0])][0] == 3]
+
+            ax[1][0].scatter(x0, y0, c=coloniecolor(determine, 0))
+            ax[1][0].scatter(x1, y1, c=coloniecolor(determine, 1))
+            ax[1][0].scatter(x2, y2, c=coloniecolor(determine, 2))
+            ax[1][0].scatter(x3, y3, c=coloniecolor(determine, 3))
+
+            ax[1][0].scatter(kmc.centroids[0][0], kmc.centroids[0][2],s=300, marker="*", c=coloniecolor(determine, 0))
+            ax[1][0].text(x=kmc.centroids[0][0], y=kmc.centroids[0][2], s=colonielabel(determine, 0))
+            ax[1][0].scatter(kmc.centroids[1][0], kmc.centroids[1][2],s=300, marker="*", c=coloniecolor(determine, 1))
+            ax[1][0].text(x=kmc.centroids[1][0], y=kmc.centroids[1][2], s=colonielabel(determine, 1))
+            ax[1][0].scatter(kmc.centroids[2][0], kmc.centroids[2][2],s=300, marker="*", c=coloniecolor(determine, 2))
+            ax[1][0].text(x=kmc.centroids[2][0], y=kmc.centroids[2][2], s=colonielabel(determine, 2))
+            ax[1][0].scatter(kmc.centroids[3][0], kmc.centroids[3][2],s=300, marker="*", c=coloniecolor(determine, 3))
+            ax[1][0].text(x=kmc.centroids[3][0], y=kmc.centroids[3][2], s=colonielabel(determine, 3))
+
+
+            ax[1][0].set_title('Height-Bone_density relation')
+            ax[1][0].set_xlabel('height')
+            ax[1][0].set_ylabel('bone_density')
+
+            x = data[:, [0, 1]]
+            y = data[:, [0, 2]]
+            z = data[:, [0, 3]]
+
+            x0= [idx[1] for idx in x if pred[int(idx[0])][0] == 0]
+            y0= [idx[1] for idx in y if pred[int(idx[0])][0] == 0]
+            z0= [idx[1] for idx in z if pred[int(idx[0])][0] == 0]
+
+            x1= [idx[1] for idx in x if pred[int(idx[0])][0] == 1]
+            y1= [idx[1] for idx in y if pred[int(idx[0])][0] == 1]
+            z1= [idx[1] for idx in z if pred[int(idx[0])][0] == 1]
+
+            x2= [idx[1] for idx in x if pred[int(idx[0])][0] == 2]
+            y2= [idx[1] for idx in y if pred[int(idx[0])][0] == 2]
+            z2= [idx[1] for idx in z if pred[int(idx[0])][0] == 2]
+
+            x3= [idx[1] for idx in x if pred[int(idx[0])][0] == 3]
+            y3= [idx[1] for idx in y if pred[int(idx[0])][0] == 3]
+            z3= [idx[1] for idx in z if pred[int(idx[0])][0] == 3]
+
+            ax[1][1].remove()
+
+            ax[1][1] = fig.add_subplot(224, projection='3d')
+            ax[1][1].scatter(x0, y0, z0, c=coloniecolor(determine, 0))
+            ax[1][1].scatter(x1, y1, z1, c=coloniecolor(determine, 1))
+            ax[1][1].scatter(x2, y2, z2, c=coloniecolor(determine, 2))
+            ax[1][1].scatter(x3, y3, z3, c=coloniecolor(determine, 3))
+
+            ax[1][1].scatter(kmc.centroids[0][0], kmc.centroids[0][1], kmc.centroids[0][2], s=150, marker="*", c=coloniecolor(determine, 0))
+            ax[1][1].text(x=kmc.centroids[0][0], y=kmc.centroids[0][1], z=kmc.centroids[0][2], s=colonielabel(determine, 0))
+            ax[1][1].scatter(kmc.centroids[1][0], kmc.centroids[1][1], kmc.centroids[1][2], s=150, marker="*", c=coloniecolor(determine, 1))
+            ax[1][1].text(x=kmc.centroids[1][0], y=kmc.centroids[1][1], z=kmc.centroids[1][2], s=colonielabel(determine, 1))
+            ax[1][1].scatter(kmc.centroids[2][0], kmc.centroids[2][1], kmc.centroids[2][2], s=150, marker="*", c=coloniecolor(determine, 2))
+            ax[1][1].text(x=kmc.centroids[2][0], y=kmc.centroids[2][1], z=kmc.centroids[2][2], s=colonielabel(determine, 2))
+            ax[1][1].scatter(kmc.centroids[3][0], kmc.centroids[3][1], kmc.centroids[3][2], s=150, marker="*", c=coloniecolor(determine, 3))
+            ax[1][1].text(x=kmc.centroids[3][0], y=kmc.centroids[3][1], z=kmc.centroids[3][2], s=colonielabel(determine, 3))
+
+            ax[1][1].set_title('Total data relations')
+            ax[1][1].set_xlabel('height')
+            ax[1][1].set_ylabel('weight')
+            ax[1][1].set_zlabel('bone_density')
+
+            plt.show()
         else:
-            print("Coordinate of the centroids :")
-            print(kmc.centroids)
-            print("Number of element in each centroids (by order)")
-            print(kmc.count)
-
-
-
-
+            print("Coordinate of the centroids using", ' '.join(head[1:]))
+            for x in range(len(kmc.centroids)):
+                print(f"Centroid {x} : ", kmc.centroids[x], f"counting {kmc.count[x]} citizens")

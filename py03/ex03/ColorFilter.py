@@ -284,9 +284,3 @@ plt.title("Celluloid Musk")
 
 plt.show()
 
-# a = np.array([[1, 2, 3], [4, 5, 6]])
-
-# b = np.array([[1, 1, 1], [1, 1, 1]])
-
-# print(np.broadcast_to(2, (1, 3)))
-

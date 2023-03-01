@@ -26,8 +26,11 @@ imp = ImageProcessor()
 arr = imp.load('no_exist')
 print(arr)
 
-arr = imp.load('nothing')
-print(arr)
+# arr = imp.load('nothing')
+# print(arr)
+
+# arr = imp.load('noright')
+# print(arr)
 
 arr = imp.load('42AI.png')
 print(arr)
