@@ -227,22 +227,22 @@ class KmeansClustering:
         -------
         This function should not raise any Exception.
         """
+        if (self.centroids == []):
+            print("No fit on the dataset have been done")
+            return []
+        res = np.zeros((X.shape[0], 1), dtype=int)
         npcentroid = np.array(self.centroids)
-        print(self.centroids)
-        res = np.array([])
-        for citizen in X:
+        for idx, citizen in enumerate(X):
             dist = np.array([])
             for centroid in npcentroid:
                 dist = np.append(dist, np.linalg.norm(citizen[1:] - centroid))
-
             mincentroid = np.where(dist == np.min(dist))[0][0]
-            res = np.concatenate((res, [mincentroid]),  axis = 0)
-
+            res[idx] = int(mincentroid)
         return res
 
 def fileRecoveryStatistics(lstats, count):
 
-    lstat = lstats
+    lstat = lstats[:]
     heightmax = lstat[0][0]
     As = lstat[0]
     asidx = 0
@@ -379,6 +379,7 @@ if (__name__ == "__main__"):
             print(kmc.centroids)
             print("Number of element in each centroids (by order)")
             print(kmc.count)
+
 
 
 
