@@ -398,7 +398,7 @@ if (__name__ == "__main__"):
             y3= [idx[1] for idx in y if pred[int(idx[0])][0] == 3]
 
 
-            fig, ax = plt.subplots(2, 2, figsize=(14, 10))
+            fig, ax = plt.subplots(2, 2)
             plt.get_current_fig_manager().canvas.manager.set_window_title('Kmeans.py')
             fig.suptitle("K-means Clustering, %d iterations 4 centroids." % (kwarg["max_iter"]))
 
