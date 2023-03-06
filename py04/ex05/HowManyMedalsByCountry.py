@@ -59,7 +59,6 @@ def how_many_medals_by_country(df, name):
     #print(ret)
     return ret
 
-
 if __name__ == "__main__":
     path = 'athlete_events.csv'
     loader = FileLoader()
